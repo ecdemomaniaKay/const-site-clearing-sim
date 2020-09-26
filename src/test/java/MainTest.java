@@ -6,9 +6,10 @@ public class MainTest {
     @Test
     void importSiteTest() {
         FileIO fileIO = new FileIO();
-        String dir = "../../test/testSite.txt";
-        String[] importedSite = fileIO.importSite(dir);
-        String[] site = {"ootooooooo", "oooooooToo"};
-        assertArrayEquals(importedSite, site);
+        String dir = "testFiles\\testSite.txt";
+        String imported = fileIO.readFile(dir);
+        String site = "ootooooooo\noooooooToo\n";
+        assertEquals(imported, site);
     }
+
 }
