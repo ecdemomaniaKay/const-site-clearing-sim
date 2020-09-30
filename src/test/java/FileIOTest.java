@@ -9,7 +9,11 @@ class FileIOTest {
         FileIO fileIO = new FileIO();
         String dir = "testFiles\\testSite.txt";
         String imported = fileIO.readFile(dir);
-        String site = "ootooooooo\noooooooToo\n";
+        String site = "totooooooo\n" +
+                "oooooooToo\n" +
+                "rrrooooToo\n" +
+                "rrrroooooo\n" +
+                "rrrrrtoooo\n";
         assertEquals(imported, site);
     }
 }
