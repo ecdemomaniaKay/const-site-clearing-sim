@@ -7,69 +7,38 @@ public class Site {
         siteRows = new FileIO().readFile(map).split("\n");
     }
 
-    public void clear(int[] position) {
-        char square = getSquare(position);
-        if (square == 'T') {
-            // todo: end sim
-            System.out.println("Simulation terminated.");
-        } else {
-            setSquare(position, 'c'); // c for cleared
+    public int outOfBounds(int[] position, char orientation, int distance) {
+        if (distance == 0) {
+            return 3;
         }
-    }
 
-    public char getSquare(int[] position) throws ArrayIndexOutOfBoundsException {
-        return siteRows[position[1]].charAt(position[0]);
-
-    }
-
-    public HashMap<String, Integer> passed(int[] start, int[] end) {
-        if (start[0] == end[0] && start[1] == end[1]) {
-            return null; //todo: fix this
-        } else {
-            HashMap<String, Integer> map = new HashMap<>();
-            map.put("o", 0);
-            map.put("t", 0);
-            map.put("T", 0);
-            map.put("r", 0);
-            map.put("error", 0);
-
-            int horizontalDiff = end[0] - start[0];
-            int signH = Integer.signum(horizontalDiff);
-
-            int verticalDiff = end[1] - start[1];
-            int signV = Integer.signum(verticalDiff);
-
-            for (int i = 1; i <= Math.abs(horizontalDiff) - 1; i++) {
-                int pos = start[0] + i * signH;
-                if (pos >= siteRows[0].length() || pos < 0) {
-                    map.put("error", 1); // out of site boundary
-                    return map;
+        switch (orientation) {
+            case 'E':
+                if (position[0] == siteRows[0].length() - 1) {
+                    return 2;
+                } else {
+                    return position[0] + distance > siteRows[0].length() ? 1 : 0;
                 }
-                String key = String.valueOf(getSquare(new int[]{start[0] + i * signH, start[1]}));
-                map.put(key, map.get(key) + 1);
-                if (key.equals("T")) {
-                    map.put("error", 2); // attempt to remove protected tree
-                    return map;
+            case 'W':
+                if (position[0] <= 0) {
+                    return 2;
+                } else {
+                    return distance > position[0] ? 1 : 0;
                 }
-            }
-            for (int i = 1; i <= Math.abs(verticalDiff) - 1; i++) {
-                int pos = start[1] + i * signV;
-                if (pos >= siteRows.length || pos < 0) {
-                    map.put("error", 1); // out of site boundary
-                    return map;
+            case 'N':
+                if (position[1] <= 0) {
+                    return 2;
+                } else {
+                    return position[1] + distance > siteRows.length ? 1 : 0;
                 }
-                String key = String.valueOf(getSquare(new int[]{start[0], start[1] + i * signV}));
-                map.put(key, map.get(key) + 1);
-                if (key.equals("T")) {
-                    map.put("error", 2); // attempt to remove protected tree
-                    return map;
+            case 'S':
+                if (position[1] == siteRows.length - 1 || position[0] == -1) {
+                    return 2;
+                } else {
+                    return distance > position[1] ? 1 : 0;
                 }
-            }
-
-            if (end[0] >= siteRows[0].length() || end[0] < 0 || end[1] >= siteRows.length || end[1] < 0) {
-                map.put("error", 1); // out of site boundary
-            }
-            return map;
+            default:
+                return 0;
         }
     }
 
@@ -79,9 +48,61 @@ public class Site {
         }
     }
 
+    public String getRoute(int[] position, char orientation, int distance) {
+        int outOfBounds = outOfBounds(position, orientation, distance);
+        if (outOfBounds == 2 || outOfBounds == 3) {
+            return "";
+        }
+
+        switch (orientation) {
+            case 'E':
+                if (outOfBounds == 1) {
+                    return siteRows[position[1]].substring(position[0] + 1, siteRows[0].length());
+                } else {
+                    return siteRows[position[1]].substring(position[0] + 1, position[0] + 1 + distance);
+                }
+            case 'W':
+                if (outOfBounds == 1) {
+                    return siteRows[position[1]].substring(0, position[0]);
+                } else {
+                    return siteRows[position[1]].substring(position[0] - distance, position[0]);
+                }
+            case 'N':
+                if (outOfBounds == 1) {
+                    return getColumn(position, position[1] * -1);
+                } else {
+                    return getColumn(position, distance * -1);
+                }
+            case 'S':
+                if (outOfBounds == 1) {
+                    return getColumn(position, siteRows.length - position[1]);
+                } else {
+                    return getColumn(position, distance);
+                }
+            default:
+                return "";
+        }
+        // todo: throw error for T
+    }
+
+    public char getSquare(int[] position) throws ArrayIndexOutOfBoundsException {
+        return siteRows[position[1]].charAt(position[0]);
+    }
+
     public void setSquare(int[] position, char square) {
         StringBuilder row = new StringBuilder(siteRows[position[1]]);
         row.setCharAt(position[0], square);
         siteRows[position[1]] = row.toString();
+    }
+
+    private String getColumn(int[] start, int signedDistance) {
+        int sign = Integer.signum(signedDistance);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 1; i < Math.abs(signedDistance); i++) {
+            stringBuilder.append(siteRows[start[1] + i * sign].charAt(start[0]));
+        }
+
+        return stringBuilder.toString();
     }
 }

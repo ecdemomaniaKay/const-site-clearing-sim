@@ -2,7 +2,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,17 +10,55 @@ class SiteTest {
     static final String MAP = "testFiles\\testSite.txt";
 
     @Test
-    void getSquare() {
+    void outOfBound() {
         Site site = new Site(MAP);
-        char square = site.getSquare(new int[]{7, 1});
-        assertEquals('T', square);
-    }
+        Bulldozer bulldozer = new Bulldozer();
 
+        assertEquals(3, site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), 0));
+
+        // 0: within bounds, 1: out of bounds, 2: on the boundary facing away from the site
+        int[][] expected = new int[][]{{0, 2, 2, 2}, {1, 1, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {0, 0, 0, 0}};
+        ArrayList<String> route = new ArrayList<String>();
+        route.add("t"); // move to [0,0]
+        route.add("otooooooo"); // move to northeast edge
+        route.add("oooo"); // move to southeast edge
+        route.add("oootrrrrr"); // move to southwest edge
+        route.add("rrot"); // move to northwest edge [0,0]
+
+        for (int i = 0; i < 5; i++) {
+
+            for (int j = 0; j < 4; j++) {
+                int distance = i == 0 ? 1 : 100;
+                int outOfBound = site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), distance);
+                System.out.println("orientation:" + bulldozer.getOrientation() + ", position: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
+                System.out.println("i: " + i + ", j: " + j);
+                assertEquals(expected[i][j], outOfBound);
+                bulldozer.turn('R');
+            }
+            if (i > 1) {
+                bulldozer.turn('R');
+            }
+            bulldozer.advance(route.get(i));
+        }
+        System.out.println("orientation:" + bulldozer.getOrientation() + ", position: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
+
+        // move to [1,1]
+        bulldozer.turn('R');
+        bulldozer.advance("t");
+        bulldozer.turn('R');
+        bulldozer.advance("o");
+
+        for (int j = 0; j < 4; j++) {
+            int outOfBound = site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), 1);
+            assertEquals(expected[5][j], outOfBound);
+            bulldozer.turn('R');
+        }
+    }
 
     // Reference:
     // Jonathan Cook https://www.baeldung.com/java-testing-system-out-println
     @Test
-    void print() {
+    void display() {
         Site site = new Site(MAP);
         String map = "totooooooo\n" +
                 "oooooooToo\n" +
@@ -38,54 +76,21 @@ class SiteTest {
     }
 
     @Test
-    void passed() {
+    void getRoute() {
         Site site = new Site(MAP);
-        int[] advance = new int[]{8, 4, 5, 3, 2};
-        char[] turn = new char[]{'S', 'R', 'R', 'R', 'S'};
-        int[] o = new int[]{5, 0, 1, 0, 0};
-        int[] t = new int[]{2, 0, 1, 0, 1};
-        int[] bigT = new int[]{0, 1, 0, 0, 0};
-        int[] r = new int[]{0, 0, 2, 2, 0};
-        int[] e = new int[]{0, 2, 0, 0, 1};
-
         Bulldozer bulldozer = new Bulldozer();
-
-        for (int i = 0; i < advance.length; i++) {
-            int[] start = bulldozer.getPosition();
-            bulldozer.turn(turn[i]);
-            bulldozer.advance(advance[i]);
-            int[] end = bulldozer.getPosition();
-
-            HashMap<String, Integer> hashMap = new HashMap<>();
-            hashMap.put("o", o[i]);
-            hashMap.put("t", t[i]);
-            hashMap.put("T", bigT[i]);
-            hashMap.put("r", r[i]);
-            hashMap.put("error", e[i]);
-
-            HashMap<String, Integer> testHashMap = site.passed(start, end);
-            if (testHashMap.containsKey("error")) {
-                if (testHashMap.get("error") == 1) {
-                    System.out.println("Bulldozer has gone off the site boundary.");
-                } else if (testHashMap.get("error") == 2) {
-                    System.out.println("Bulldozer has attempted to remove a protected tree.");
-                }
-            }
-
-            assertEquals(hashMap, testHashMap);
-
-        }
+        int[] position = bulldozer.getPosition();
+        char orientation = bulldozer.getOrientation();
+        int distance = 6;
+        String route = site.getRoute(position, orientation, distance);
+        assertEquals("totooo", route);
     }
 
     @Test
-    void clear() {
-        int[][] positions = new int[][]{new int[]{0, 0}, new int[]{7, 1}};
-        char[] expected = new char[]{'c', 'T'};
+    void getSquare() {
         Site site = new Site(MAP);
-        for (int i = 0; i < positions.length; i++) {
-            site.clear(positions[i]);
-            assertEquals(site.getSquare(positions[i]), expected[i]);
-        }
+        char square = site.getSquare(new int[]{7, 1});
+        assertEquals('T', square);
     }
 
     @Test

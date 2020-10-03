@@ -7,7 +7,7 @@ class BulldozerTest {
     @Test
     void getDirIndex() {
         Bulldozer bulldozer = new Bulldozer();
-        assertEquals('E', bulldozer.getDirIndex());
+        assertEquals('E', bulldozer.getOrientation());
     }
 
     @Test
@@ -19,8 +19,12 @@ class BulldozerTest {
     @Test
     void advance() {
         Bulldozer bulldozer = new Bulldozer();
-        bulldozer.advance(1);
-        assertArrayEquals(new int[]{0, 0}, bulldozer.getPosition());
+        String route = "toorrot";
+        String clearedRoute = bulldozer.advance(route);
+        assertEquals("ccccccc", clearedRoute);
+        assertEquals(1, bulldozer.getDamage());
+        assertEquals(11, bulldozer.getFuelUsage());
+        assertArrayEquals(new int[]{6, 0}, bulldozer.getPosition());
     }
 
     @Test
@@ -30,11 +34,11 @@ class BulldozerTest {
 
         for (int i = 1; i <= CLOCKWISE.length; i++) {
             bulldozer.turn('R');
-            assertEquals(CLOCKWISE[i % CLOCKWISE.length], bulldozer.getDirIndex());
+            assertEquals(CLOCKWISE[i % CLOCKWISE.length], bulldozer.getOrientation());
         }
         for (int i = CLOCKWISE.length - 1; i >= 0; i--) {
             bulldozer.turn('L');
-            assertEquals(CLOCKWISE[i % CLOCKWISE.length], bulldozer.getDirIndex());
+            assertEquals(CLOCKWISE[i % CLOCKWISE.length], bulldozer.getOrientation());
         }
     }
 }

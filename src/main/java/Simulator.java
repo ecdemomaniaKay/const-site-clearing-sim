@@ -33,7 +33,7 @@ public class Simulator {
                 break;
             default:
                 if (command.matches("a\\s+[1-9]\\d*")) {
-                    bulldozer.advance(Integer.parseInt(command.split("\\s+")[1]));
+//                    bulldozer.advance(Integer.parseInt(command.split("\\s+")[1]));
                 } else {
                     System.out.println(command + " is an invalid command. Please try again.");
                 }
