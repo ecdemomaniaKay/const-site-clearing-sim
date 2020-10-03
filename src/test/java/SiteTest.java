@@ -14,9 +14,9 @@ class SiteTest {
         Site site = new Site(MAP);
         Bulldozer bulldozer = new Bulldozer();
 
+        // 0: within bounds, 1: out of bounds, 2: on the boundary facing away from the site
         assertEquals(3, site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), 0));
 
-        // 0: within bounds, 1: out of bounds, 2: on the boundary facing away from the site
         int[][] expected = new int[][]{{0, 2, 2, 2}, {1, 1, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {0, 0, 0, 0}};
         ArrayList<String> route = new ArrayList<String>();
         route.add("t"); // move to [0,0]
@@ -94,16 +94,17 @@ class SiteTest {
     }
 
     @Test
-    void summary() {
+    void countUncleared() {
         Site site = new Site(MAP);
-        int unClearedCount = site.summary();
-        assertEquals(50, unClearedCount);
+        assertEquals(50, site.countUncleared());
 
         Bulldozer bulldozer = new Bulldozer();
-        bulldozer.advance(site.getRoute(bulldozer.getPosition(), bulldozer.getOrientation(), 5));
-        // dump cleared route back to map
-        unClearedCount = site.summary();
-
+        int[] position = bulldozer.getPosition();
+        char orientation = bulldozer.getOrientation();
+        String clearedSquares =
+                bulldozer.advance(site.getRoute(position, orientation, 1));
+        site.setRowCol(position, orientation, clearedSquares);
+        assertEquals(49, site.countUncleared());
     }
 
     @Test
@@ -135,24 +136,28 @@ class SiteTest {
         char[] orientationActual = new char[loop];
         int[] squares = new int[loop];
 
+        // case 1: advance east 5 squares
         distance[0] = 5;
         expected.add("cccccooooo");
         start[0] = new int[]{-1, 0};
         orientationActual[0] = 'E';
         squares[0] = length;
 
+        // case 2: continue south 3 squares
         distance[1] = 3;
         expected.add("cccr");
         start[1] = new int[]{start[0][0] + distance[0], 0};
         orientationActual[1] = 'S';
         squares[1] = width - 1 - start[1][1];
 
+        // case 3: continue west 2 squares
         distance[2] = 2;
         expected.add("ccrr");
         start[2] = new int[]{start[1][0], start[1][1] + distance[1]};
         orientationActual[2] = 'W';
         squares[2] = start[2][0];
 
+        // case 4: continue north 2 squares
         distance[3] = 2;
         expected.add("ccc");
         start[3] = new int[]{start[2][0] - distance[2], start[2][1]};

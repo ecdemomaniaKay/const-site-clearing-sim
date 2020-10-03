@@ -7,6 +7,7 @@ public class Site {
         siteRows = new FileIO().readFile(map).split("\n");
     }
 
+    // 0: within bounds, 1: out of bounds, 2: on the boundary facing away from the site
     public int outOfBounds(int[] position, char orientation, int distance) {
         if (distance == 0) {
             return 3;
@@ -17,7 +18,7 @@ public class Site {
                 if (position[0] == siteRows[0].length() - 1) {
                     return 2;
                 } else {
-                    return position[0] + distance > siteRows[0].length() ? 1 : 0;
+                    return position[0] + distance >= siteRows[0].length() ? 1 : 0;
                 }
             case 'W':
                 if (position[0] <= 0) {
@@ -29,7 +30,7 @@ public class Site {
                 if (position[1] <= 0) {
                     return 2;
                 } else {
-                    return position[1] + distance > siteRows.length ? 1 : 0;
+                    return position[1] - distance < 0 ? 1 : 0;
                 }
             case 'S':
                 if (position[1] == siteRows.length - 1 || position[0] == -1) {
@@ -43,18 +44,24 @@ public class Site {
     }
 
     public String checkForProtectedTree(String route) {
+        if (route.isEmpty()) {
+            return route;
+        }
+
         int i = route.indexOf('T');
         if (i == -1) {
             return route;
         } else {
-            return route.substring(0, i + 1);
+            return route.substring(0, i);
         }
     }
 
     public String getRoute(int[] position, char orientation, int distance) {
         int outOfBounds = outOfBounds(position, orientation, distance);
-        if (outOfBounds == 2 || outOfBounds == 3) {
+        if (outOfBounds == 3) {
             return "";
+        } else if (outOfBounds == 2) {
+            return "OutOfBoundsError";
         }
 
         switch (orientation) {
@@ -78,7 +85,7 @@ public class Site {
                 }
             case 'S':
                 if (outOfBounds == 1) {
-                    return getColumn(position, siteRows.length - position[1], 1);
+                    return getColumn(position, siteRows.length - 1 - position[1], 1);
                 } else {
                     return getColumn(position, distance, 1);
                 }
@@ -87,7 +94,7 @@ public class Site {
         }
     }
 
-    public int summary() {
+    public int countUncleared() {
         int cleared = 0;
         for (int i = 0; i < siteRows.length; i++) {
             cleared += siteRows[i].length() - siteRows[i].replace("c", "").length();
@@ -103,7 +110,7 @@ public class Site {
 
     private String getColumn(int[] start, int distance, int sign) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 1; i < Math.abs(distance) + 1; i++) {
+        for (int i = 1; i < distance + 1; i++) {
             stringBuilder.append(siteRows[start[1] + i * sign].charAt(start[0]));
         }
         return stringBuilder.toString();
@@ -134,7 +141,7 @@ public class Site {
                 } else {
                     siteRows[position[1]] =
                             new StringBuilder(siteRows[position[1]])
-                                    .replace(position[0], position[0] + seq.length() + 1, seq)
+                                    .replace(position[0] + 1, position[0] + seq.length() + 1, seq)
                                     .toString();
                 }
                 break;

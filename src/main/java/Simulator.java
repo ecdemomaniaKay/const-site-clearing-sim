@@ -3,11 +3,6 @@ import java.util.Scanner;
 public class Simulator {
     private final Site site;
     private final Bulldozer bulldozer;
-    private final int commCost = 1;
-    private final int fuelCost = 1;
-    private final int unclearedSquareCost = 3;
-    private final int protectedTreeCost = 10;
-    private final int paintDamageCost = 2;
     private int commIssued;
     private int protectedTreeDestroyed;
 
@@ -27,7 +22,7 @@ public class Simulator {
                 " site, immediately to the West of the site, and facing East.\n");
     }
 
-    public void addCommand() {
+    public boolean addCommand() {
         Scanner input = new Scanner(System.in);
         System.out.print("(l)eft, (r)ight, (a)dvance <n>, (q)uit: ");
         String command = input.nextLine().trim();
@@ -42,22 +37,39 @@ public class Simulator {
                 break;
             case "q":
                 terminate("at your request");
-                break;
+                return true;
             default:
                 if (command.matches("a\\s+[1-9]\\d*")) {
                     int distance = Integer.parseInt(command.split("\\s+")[1]);
-                    String route = site.getRoute(bulldozer.getPosition(), bulldozer.getOrientation(), distance);
+                    int[] position = bulldozer.getPosition();
+                    char orientation = bulldozer.getOrientation();
+
+                    String route = site.getRoute(position, orientation, distance);
                     String checked = site.checkForProtectedTree(route);
-                    bulldozer.advance(checked);
+                    String cleared = bulldozer.advance(checked);
+                    site.setRowCol(position, orientation, cleared);
+
+                    // debug
+                    site.display();
+                    System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
+                    System.out.println("orientation: " + bulldozer.getOrientation());
+
                     commIssued += 1;
+
                     if (checked.length() != route.length()) {
                         protectedTreeDestroyed = 1;
-                        terminate("because you have attempted to remove a protected tree");
+                        terminate("because you attempted to removed a protected tree");
+                        return true;
+                    } else if (route.contains("OutOfBoundsError") || route.length() != distance) {
+                        terminate("because you attempted to navigated beyond the boundary of the site");
+                        return true;
                     }
                 } else {
                     System.out.println(command + " is an invalid command. Please try again.");
                 }
         }
+
+        return false;
     }
 
     private void terminate(String reason) {
@@ -65,13 +77,21 @@ public class Simulator {
         System.out.println("The simulation has ended " + reason + ". These are the commands you issued:\n");
         // todo: print command summary
         System.out.println("The costs for this land clearing operation were:\n");
-        summary();
+        costSummary();
         System.out.println("Thank you for using the Aconex site clearing simulator.");
     }
 
-    private void summary() {
+    private void costSummary() {
+        int commUnitCost = 1;
+        int fuelUnitCost = 1;
+        int unclearedUnitCost = 3;
+        int protectedTreeUnitCost = 10;
+        int damageUnitCost = 2;
+
+        // width of the summary table
         int gap1 = 42;
         int gap2 = 8;
+
         String label1 = "Item";
         String label2 = "Quantity";
         String label3 = "Cost";
@@ -81,12 +101,15 @@ public class Simulator {
         String item4 = "destruction of protected tree";
         String item5 = "paint damage to bulldozer";
         String total = "Total";
-        int comm = commIssued * commCost;
-        int fuel = bulldozer.getFuelUsage() * fuelCost;
-        int uncleared = 0;
-        int proTree = protectedTreeDestroyed * protectedTreeCost;
-        int damage = bulldozer.getDamage() * paintDamageCost;
-        int sum = comm + fuel + uncleared + proTree + damage;
+        int commCost = commIssued * commUnitCost;
+        int fuel = bulldozer.getFuelUsage();
+        int fuelCost = bulldozer.getFuelUsage() * fuelUnitCost;
+        int uncleared = site.countUncleared();
+        int unclearedCost = site.countUncleared() * unclearedUnitCost;
+        int treeCost = protectedTreeDestroyed * protectedTreeUnitCost;
+        int damage = bulldozer.getDamage();
+        int damageCost = bulldozer.getDamage() * damageUnitCost;
+        int sum = commCost + fuelCost + unclearedCost + treeCost + damageCost;
 
         System.out.println(
                 label1 + emptySpace(gap1 - label1.length() - label2.length()) +
@@ -94,30 +117,29 @@ public class Simulator {
                         label3);
         System.out.println(
                 item1 + emptySpace(gap1 - item1.length() - countDigit(commIssued)) +
-                        commIssued + emptySpace(gap2 - countDigit(comm)) +
-                        comm
+                        commIssued + emptySpace(gap2 - countDigit(commCost)) +
+                        commCost
         );
         System.out.println(
-                item2 +
-                        emptySpace(gap1 - item2.length() - countDigit(bulldozer.getFuelUsage())) +
-                        bulldozer.getFuelUsage() +
-                        emptySpace(gap2 - countDigit(fuel)) +
-                        fuel
-        );
-        System.out.println("uncleared squares                       12      12");
-        System.out.println(
-                item4 +
-                        emptySpace(gap1 - item4.length() - countDigit(protectedTreeDestroyed)) +
-                        protectedTreeDestroyed +
-                        emptySpace(gap2 - countDigit(proTree)) +
-                        proTree
+                item2 + emptySpace(gap1 - item2.length() - countDigit(fuel)) +
+                        fuel + emptySpace(gap2 - countDigit(fuelCost)) +
+                        fuelCost
         );
         System.out.println(
-                item5 +
-                        emptySpace(gap1 - item5.length() - countDigit(bulldozer.getDamage())) +
-                        bulldozer.getDamage() +
-                        emptySpace(gap2 - countDigit(damage)) +
-                        damage
+                item3 + emptySpace(gap1 - item3.length() - countDigit(uncleared)) +
+                        uncleared + emptySpace(gap2 - countDigit(unclearedCost)) +
+                        unclearedCost
+
+        );
+        System.out.println(
+                item4 + emptySpace(gap1 - item4.length() - countDigit(protectedTreeDestroyed)) +
+                        protectedTreeDestroyed + emptySpace(gap2 - countDigit(treeCost)) +
+                        treeCost
+        );
+        System.out.println(
+                item5 + emptySpace(gap1 - item5.length() - countDigit(damage)) +
+                        damage + emptySpace(gap2 - countDigit(damageCost)) +
+                        damageCost
         );
         System.out.println("----");
         System.out.println(total + emptySpace(gap1 + gap2 - total.length() - countDigit(sum)) + sum + "\n");

@@ -23,7 +23,10 @@ public class Bulldozer {
      * @return A sequence of cleared squares.
      */
     public String advance(String route) {
-        StringBuffer clearedRoute = new StringBuffer();
+        if (route.isEmpty()) {
+            return route;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < route.length(); i++) {
             switch (route.charAt(i)) {
                 case 'c':
@@ -40,7 +43,7 @@ public class Bulldozer {
                     }
                     break;
             }
-            clearedRoute.append("c");
+            stringBuilder.append("c");
         }
 
         int distance = route.length();
@@ -59,7 +62,7 @@ public class Bulldozer {
                 break;
         }
 
-        return clearedRoute.toString();
+        return stringBuilder.toString();
     }
 
     /**
