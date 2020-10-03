@@ -18,7 +18,7 @@ class SiteTest {
         assertEquals(3, site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), 0));
 
         int[][] expected = new int[][]{{0, 2, 2, 2}, {1, 1, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {0, 0, 0, 0}};
-        ArrayList<String> route = new ArrayList<String>();
+        ArrayList<String> route = new ArrayList<>();
         route.add("t"); // move to [0,0]
         route.add("otooooooo"); // move to northeast edge
         route.add("oooo"); // move to southeast edge
@@ -82,7 +82,7 @@ class SiteTest {
         bulldozer.turn('L');
         String route = site.getRoute(bulldozer.getPosition(), bulldozer.getOrientation(), 8);
         String checked = site.checkForProtectedTree(route);
-        assertEquals("rooooT", checked);
+        assertEquals("roooo", checked);
     }
 
     @Test
@@ -96,7 +96,7 @@ class SiteTest {
     @Test
     void countUncleared() {
         Site site = new Site(MAP);
-        assertEquals(50, site.countUncleared());
+        assertEquals(48, site.countUncleared());
 
         Bulldozer bulldozer = new Bulldozer();
         int[] position = bulldozer.getPosition();
@@ -104,22 +104,7 @@ class SiteTest {
         String clearedSquares =
                 bulldozer.advance(site.getRoute(position, orientation, 1));
         site.setRowCol(position, orientation, clearedSquares);
-        assertEquals(49, site.countUncleared());
-    }
-
-    @Test
-    void getSquare() {
-        Site site = new Site(MAP);
-        char square = site.getSquare(new int[]{7, 1});
-        assertEquals('T', square);
-    }
-
-    @Test
-    void setSquare() {
-        Site site = new Site(MAP);
-        int[] pos1 = new int[]{0, 0};
-        site.setSquare(pos1, 'o');
-        assertEquals(site.getSquare(pos1), 'o');
+        assertEquals(47, site.countUncleared());
     }
 
     @Test

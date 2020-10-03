@@ -1,16 +1,19 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Simulator {
     private final Site site;
     private final Bulldozer bulldozer;
-    private int commIssued;
+    private final ArrayList<String> commIssued;
+    private int commCount;
     private int protectedTreeDestroyed;
 
 
     Simulator(String map) {
         site = new Site(map);
         bulldozer = new Bulldozer();
-        commIssued = 0;
+        commCount = 0;
+        commIssued = new ArrayList<>();
         protectedTreeDestroyed = 0;
     }
 
@@ -29,13 +32,16 @@ public class Simulator {
         switch (command.toLowerCase().trim()) {
             case "l":
                 bulldozer.turn('L');
-                commIssued += 1;
+                commCount += 1;
+                commIssued.add("turn left");
                 break;
             case "r":
                 bulldozer.turn('R');
-                commIssued += 1;
+                commCount += 1;
+                commIssued.add("turn right");
                 break;
             case "q":
+                commIssued.add("quit");
                 terminate("at your request");
                 return true;
             default:
@@ -54,7 +60,8 @@ public class Simulator {
                     System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
                     System.out.println("orientation: " + bulldozer.getOrientation());
 
-                    commIssued += 1;
+                    commCount += 1;
+                    commIssued.add("advance " + distance);
 
                     if (checked.length() != route.length()) {
                         protectedTreeDestroyed = 1;
@@ -68,17 +75,28 @@ public class Simulator {
                     System.out.println(command + " is an invalid command. Please try again.");
                 }
         }
-
         return false;
     }
 
     private void terminate(String reason) {
         System.out.println();
         System.out.println("The simulation has ended " + reason + ". These are the commands you issued:\n");
-        // todo: print command summary
+        System.out.println(commSummary() + "\n");
         System.out.println("The costs for this land clearing operation were:\n");
         costSummary();
         System.out.println("Thank you for using the Aconex site clearing simulator.");
+    }
+
+    private String commSummary() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < commIssued.size(); i++) {
+            if (i != commIssued.size() - 1) {
+                stringBuilder.append(commIssued.get(i)).append(", ");
+            } else {
+                stringBuilder.append(commIssued.get(i));
+            }
+        }
+        return stringBuilder.toString();
     }
 
     private void costSummary() {
@@ -101,7 +119,7 @@ public class Simulator {
         String item4 = "destruction of protected tree";
         String item5 = "paint damage to bulldozer";
         String total = "Total";
-        int commCost = commIssued * commUnitCost;
+        int commCost = commCount * commUnitCost;
         int fuel = bulldozer.getFuelUsage();
         int fuelCost = bulldozer.getFuelUsage() * fuelUnitCost;
         int uncleared = site.countUncleared();
@@ -116,8 +134,8 @@ public class Simulator {
                         label2 + emptySpace(gap2 - label3.length()) +
                         label3);
         System.out.println(
-                item1 + emptySpace(gap1 - item1.length() - countDigit(commIssued)) +
-                        commIssued + emptySpace(gap2 - countDigit(commCost)) +
+                item1 + emptySpace(gap1 - item1.length() - countDigit(commCount)) +
+                        commCount + emptySpace(gap2 - countDigit(commCost)) +
                         commCost
         );
         System.out.println(

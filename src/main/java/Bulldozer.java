@@ -3,21 +3,37 @@
  */
 
 public class Bulldozer {
-    public static final char[] CLOCKWISE = new char[]{'E', 'S', 'W', 'N'}; // possible directions in clockwise order
+    /**
+     * All possible directions the bulldozer can face in clockwise order.
+     */
+    public static final char[] CLOCKWISE = new char[]{'E', 'S', 'W', 'N'};
+
+    // index of the element in CLOCKWISE that represents the direction the bulldozer is facing
     private int dirIndex;
+
+    // the coordinate of the bulldozer's position
     final private int[] position;
+
+    // fuel consumption
     private int fuelUsage;
+
+    // amount of damage suffered
     private int damage;
 
     Bulldozer() {
-        dirIndex = 0; // initially facing East
-        position = new int[]{-1, 0}; // initial position at Northern edge of the site, immediately to the West of the site, facing East
+        // initially facing East
+        dirIndex = 0;
+
+        // initial position at Northern edge of the site, immediately to the West of the site
+        position = new int[]{-1, 0};
+
         fuelUsage = 0;
         damage = 0;
     }
 
     /**
-     * Move the bulldozer forward and clear land at the same time.
+     * Move the bulldozer forward and clear land. Depending on the terrain the amount of fuel consumed
+     * is different as well as whether the bulldozer will be scratched.
      *
      * @param route The terrain, i.e. sequence of squares, that the bulldozer will advance through.
      * @return A sequence of cleared squares.
@@ -26,6 +42,7 @@ public class Bulldozer {
         if (route.isEmpty()) {
             return route;
         }
+
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < route.length(); i++) {
             switch (route.charAt(i)) {

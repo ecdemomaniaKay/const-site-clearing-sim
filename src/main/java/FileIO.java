@@ -1,18 +1,24 @@
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * Class that reads files.
+ */
 public class FileIO {
+    /**
+     * Read a file.
+     *
+     * @param dir The filepath.
+     * @return The contents of the file.
+     */
     public String readFile(String dir) {
-        StringBuffer fileContents = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         try {
-            FileReader inputFile = new FileReader(dir);
-            try {
+            try (FileReader inputFile = new FileReader(dir)) {
                 Scanner parser = new Scanner(inputFile);
                 while (parser.hasNextLine()) {
-                    fileContents.append(parser.nextLine() + "\n");
+                    stringBuilder.append(parser.nextLine()).append("\n");
                 }
-            } finally {
-                inputFile.close();
             }
         } catch (FileNotFoundException e) {
             System.out.println(dir + " not found");
@@ -20,6 +26,6 @@ public class FileIO {
             System.out.println("Unexpected I/O error");
         }
 
-        return fileContents.toString();
+        return stringBuilder.toString();
     }
 }

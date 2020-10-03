@@ -1,13 +1,26 @@
-import java.util.HashMap;
+/**
+ * Class for handling the site information including terrain, length and width.
+ */
 
 public class Site {
-    private String[] siteRows;
+    // Stores the terrain type of each square. Row extends from north to south, and
+    // row elements, i.e. columns of the site, from west to east. Hence [0,0] is
+    // the northwest corner of the site.
+    private final String[] siteRows;
 
     Site(String map) {
         siteRows = new FileIO().readFile(map).split("\n");
     }
 
-    // 0: within bounds, 1: out of bounds, 2: on the boundary facing away from the site
+    /**
+     * Check whether the bulldozer will run across the boundary.
+     *
+     * @param position    The coordinates of the current bulldozer's position.
+     * @param orientation The direction the bulldozer is currently facing.
+     * @param distance    The distance the bulldozer wishes to advance.
+     * @return 0 for the bulldozer will remain within the site, 1 for it will cross the boundary,
+     * 2 for it is on the boundary facing away from the site, and 3 when the distance is 0.
+     */
     public int outOfBounds(int[] position, char orientation, int distance) {
         if (distance == 0) {
             return 3;
@@ -43,6 +56,13 @@ public class Site {
         }
     }
 
+    /**
+     * Check whether the bulldozer will run into a protected tree.
+     *
+     * @param route The route that the bulldozer plans to take.
+     * @return A sequence of squares, representing the terrain, that the bulldozer may advance through,
+     * which does not include a protected tree and the squares behind it.
+     */
     public String checkForProtectedTree(String route) {
         if (route.isEmpty()) {
             return route;
@@ -56,8 +76,19 @@ public class Site {
         }
     }
 
+    /**
+     * Get the sequence of squares, which represents the terrain that the the bulldozer will advance through.
+     *
+     * @param position    The bulldozer's current position.
+     * @param orientation The direction the bulldozer is currently facing.
+     * @param distance    The distance the bulldozer wishes to advance.
+     * @return A sequence of squares, representing the terrain, which is trimmed if needed to ensure the
+     * bulldozer only operates within the site's boundaries.
+     */
     public String getRoute(int[] position, char orientation, int distance) {
+        // check whether the intended advance distance will exceed the site boundary
         int outOfBounds = outOfBounds(position, orientation, distance);
+
         if (outOfBounds == 3) {
             return "";
         } else if (outOfBounds == 2) {
@@ -94,38 +125,51 @@ public class Site {
         }
     }
 
+    /**
+     * Count the number of uncleared squares.
+     *
+     * @return The number of uncleared squares.
+     */
     public int countUncleared() {
-        int cleared = 0;
-        for (int i = 0; i < siteRows.length; i++) {
-            cleared += siteRows[i].length() - siteRows[i].replace("c", "").length();
+        int notCleared = 0;
+        for (String siteRow : siteRows) {
+            notCleared += siteRow.replace("c", "").replace("T", "").length();
         }
-        return siteRows.length * siteRows[0].length() - cleared;
+        return notCleared;
     }
 
+    /**
+     * Prints the site map.
+     */
     public void display() {
-        for (int i = 0; i < siteRows.length; i++) {
-            System.out.println(siteRows[i].replaceAll(".(?!$)", "$0 "));
+        for (String siteRow : siteRows) {
+            System.out.println(siteRow.replaceAll(".(?!$)", "$0 "));
         }
     }
 
-    private String getColumn(int[] start, int distance, int sign) {
+    /**
+     * Get the route for north-bound or south-bound advance plans.
+     *
+     * @param position The bulldozer's current position.
+     * @param distance The distance the bulldozer wishes to advance.
+     * @param sign     The direction the bulldozer wishes to advance. 1 for south and -1 for north.
+     * @return The sequence of squares for the advance plan.
+     */
+    private String getColumn(int[] position, int distance, int sign) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 1; i < distance + 1; i++) {
-            stringBuilder.append(siteRows[start[1] + i * sign].charAt(start[0]));
+            stringBuilder.append(siteRows[position[1] + i * sign].charAt(position[0]));
         }
         return stringBuilder.toString();
     }
 
-    public char getSquare(int[] position) throws ArrayIndexOutOfBoundsException {
-        return siteRows[position[1]].charAt(position[0]);
-    }
-
-    public void setSquare(int[] position, char square) {
-        StringBuilder row = new StringBuilder(siteRows[position[1]]);
-        row.setCharAt(position[0], square);
-        siteRows[position[1]] = row.toString();
-    }
-
+    /**
+     * Update the site map after advancing through the land.
+     *
+     * @param position    The bulldozer's current position.
+     * @param orientation The direction the bulldozer is currently facing.
+     * @param seq         The sequence of squares that will be used to update the map.
+     */
     public void setRowCol(int[] position, char orientation, String seq) {
         if (seq.isEmpty()) {
             return;
@@ -133,6 +177,7 @@ public class Site {
 
         switch (orientation) {
             case 'E':
+                // if the bulldozer is at the starting position [-1, 0]
                 if (position[0] < 0) {
                     siteRows[position[1]] =
                             new StringBuilder(siteRows[position[1]])
@@ -172,5 +217,4 @@ public class Site {
                 break;
         }
     }
-
 }
