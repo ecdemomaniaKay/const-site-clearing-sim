@@ -6,50 +6,14 @@ public class Bulldozer {
     public static final char[] CLOCKWISE = new char[]{'E', 'S', 'W', 'N'}; // possible directions in clockwise order
     private int dirIndex;
     final private int[] position;
-    int fuelUsage;
-    int damage;
+    private int fuelUsage;
+    private int damage;
 
     Bulldozer() {
         dirIndex = 0; // initially facing East
         position = new int[]{-1, 0}; // initial position at Northern edge of the site, immediately to the West of the site, facing East
         fuelUsage = 0;
         damage = 0;
-    }
-
-    /**
-     * Get the amount of scratches on the bulldozer.
-     *
-     * @return The amount of scratches on the bulldozer.
-     */
-    public int getDamage() {
-        return damage;
-    }
-
-    /**
-     * Get the <code>CLOCKWISE</code> index of the direction the bulldozer is facing.
-     *
-     * @return The index of the element in <code>CLOCKWISE</code> that represents the direction the bulldozer is facing.
-     */
-    public char getOrientation() {
-        return CLOCKWISE[dirIndex];
-    }
-
-    /**
-     * Get the amount of fuel used.
-     *
-     * @return The amount of fuel used.
-     */
-    public int getFuelUsage() {
-        return fuelUsage;
-    }
-
-    /**
-     * Get the position of the bulldozer.
-     *
-     * @return The position of the bulldozer.
-     */
-    public int[] getPosition() {
-        return new int[]{position[0], position[1]};
     }
 
     /**
@@ -119,8 +83,42 @@ public class Bulldozer {
                     dirIndex += 1;
                 }
                 break;
-            default:
-                // todo: add default action
         }
+    }
+
+    /**
+     * Get the amount of scratches on the bulldozer.
+     *
+     * @return The amount of scratches on the bulldozer.
+     */
+    public int getDamage() {
+        return damage;
+    }
+
+    /**
+     * Get the <code>CLOCKWISE</code> index of the direction the bulldozer is facing.
+     *
+     * @return The index of the element in <code>CLOCKWISE</code> that represents the direction the bulldozer is facing.
+     */
+    public char getOrientation() {
+        return CLOCKWISE[dirIndex];
+    }
+
+    /**
+     * Get the amount of fuel used.
+     *
+     * @return The amount of fuel used.
+     */
+    public int getFuelUsage() {
+        return fuelUsage;
+    }
+
+    /**
+     * Get the position of the bulldozer.
+     *
+     * @return The position of the bulldozer.
+     */
+    public int[] getPosition() {
+        return new int[]{position[0], position[1]};
     }
 }

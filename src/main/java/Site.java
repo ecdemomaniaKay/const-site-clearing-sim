@@ -35,16 +35,19 @@ public class Site {
                 if (position[1] == siteRows.length - 1 || position[0] == -1) {
                     return 2;
                 } else {
-                    return distance > position[1] ? 1 : 0;
+                    return distance > siteRows.length - 1 - position[1] ? 1 : 0;
                 }
             default:
                 return 0;
         }
     }
 
-    public void display() {
-        for (int i = 0; i < siteRows.length; i++) {
-            System.out.println(siteRows[i].replaceAll(".(?!$)", "$0 "));
+    public String checkForProtectedTree(String route) {
+        int i = route.indexOf('T');
+        if (i == -1) {
+            return route;
+        } else {
+            return route.substring(0, i + 1);
         }
     }
 
@@ -63,26 +66,47 @@ public class Site {
                 }
             case 'W':
                 if (outOfBounds == 1) {
-                    return siteRows[position[1]].substring(0, position[0]);
+                    return new StringBuilder(siteRows[position[1]].substring(0, position[0])).reverse().toString();
                 } else {
-                    return siteRows[position[1]].substring(position[0] - distance, position[0]);
+                    return new StringBuilder(siteRows[position[1]].substring(position[0] - distance, position[0])).reverse().toString();
                 }
             case 'N':
                 if (outOfBounds == 1) {
-                    return getColumn(position, position[1] * -1);
+                    return getColumn(position, position[1], -1);
                 } else {
-                    return getColumn(position, distance * -1);
+                    return getColumn(position, distance, -1);
                 }
             case 'S':
                 if (outOfBounds == 1) {
-                    return getColumn(position, siteRows.length - position[1]);
+                    return getColumn(position, siteRows.length - position[1], 1);
                 } else {
-                    return getColumn(position, distance);
+                    return getColumn(position, distance, 1);
                 }
             default:
                 return "";
         }
-        // todo: throw error for T
+    }
+
+    public int summary() {
+        int cleared = 0;
+        for (int i = 0; i < siteRows.length; i++) {
+            cleared += siteRows[i].length() - siteRows[i].replace("c", "").length();
+        }
+        return siteRows.length * siteRows[0].length() - cleared;
+    }
+
+    public void display() {
+        for (int i = 0; i < siteRows.length; i++) {
+            System.out.println(siteRows[i].replaceAll(".(?!$)", "$0 "));
+        }
+    }
+
+    private String getColumn(int[] start, int distance, int sign) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 1; i < Math.abs(distance) + 1; i++) {
+            stringBuilder.append(siteRows[start[1] + i * sign].charAt(start[0]));
+        }
+        return stringBuilder.toString();
     }
 
     public char getSquare(int[] position) throws ArrayIndexOutOfBoundsException {
@@ -95,14 +119,51 @@ public class Site {
         siteRows[position[1]] = row.toString();
     }
 
-    private String getColumn(int[] start, int signedDistance) {
-        int sign = Integer.signum(signedDistance);
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 1; i < Math.abs(signedDistance); i++) {
-            stringBuilder.append(siteRows[start[1] + i * sign].charAt(start[0]));
+    public void setRowCol(int[] position, char orientation, String seq) {
+        if (seq.isEmpty()) {
+            return;
         }
 
-        return stringBuilder.toString();
+        switch (orientation) {
+            case 'E':
+                if (position[0] < 0) {
+                    siteRows[position[1]] =
+                            new StringBuilder(siteRows[position[1]])
+                                    .replace(0, seq.length(), seq)
+                                    .toString();
+                } else {
+                    siteRows[position[1]] =
+                            new StringBuilder(siteRows[position[1]])
+                                    .replace(position[0], position[0] + seq.length() + 1, seq)
+                                    .toString();
+                }
+                break;
+            case 'W':
+                siteRows[position[1]] =
+                        new StringBuilder(siteRows[position[1]])
+                                .replace(
+                                        position[0] - seq.length(),
+                                        position[0],
+                                        new StringBuilder(seq).reverse().toString())
+                                .toString();
+                break;
+            case 'S':
+                for (int i = 0; i < seq.length(); i++) {
+                    siteRows[position[1] + i + 1] =
+                            new StringBuilder(siteRows[position[1] + i + 1])
+                                    .replace(position[0], position[0] + 1, seq.substring(i, i + 1))
+                                    .toString();
+                }
+                break;
+            case 'N':
+                for (int i = 0; i < seq.length(); i++) {
+                    siteRows[position[1] - i - 1] =
+                            new StringBuilder(siteRows[position[1] - i - 1])
+                                    .replace(position[0], position[0] + 1, seq.substring(i, i + 1))
+                                    .toString();
+                }
+                break;
+        }
     }
+
 }
