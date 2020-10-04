@@ -1,22 +1,34 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * A simulator that simulates the coordination between a construction site supervisor and bulldozer operator
+ * to clear a site in preparation for building.
+ */
 public class Simulator {
+    // The site object which handles information regarding the site
     private final Site site;
+
+    // The bulldozer object which can clear the land
     private final Bulldozer bulldozer;
+
+    // A list of all commands issued
     private final ArrayList<String> commIssued;
-    private int commCount;
+
+    // The whether the protected tree has been destroyed. 0 for not destroyed, 1 for destroyed.
     private int protectedTreeDestroyed;
 
 
     Simulator(String map) {
         site = new Site(map);
         bulldozer = new Bulldozer();
-        commCount = 0;
         commIssued = new ArrayList<>();
         protectedTreeDestroyed = 0;
     }
 
+    /**
+     * Prints welcome message.
+     */
     public void welcome() {
         System.out.println("Welcome to the Aconex site clearing simulator. This is a map of the site:\n");
         site.display();
@@ -25,6 +37,11 @@ public class Simulator {
                 " site, immediately to the West of the site, and facing East.\n");
     }
 
+    /**
+     * Prompts user to issue a command.
+     *
+     * @return Whether the program should terminate.
+     */
     public boolean addCommand() {
         Scanner input = new Scanner(System.in);
         System.out.print("(l)eft, (r)ight, (a)dvance <n>, (q)uit: ");
@@ -32,12 +49,10 @@ public class Simulator {
         switch (command.toLowerCase().trim()) {
             case "l":
                 bulldozer.turn('L');
-                commCount += 1;
                 commIssued.add("turn left");
                 break;
             case "r":
                 bulldozer.turn('R');
-                commCount += 1;
                 commIssued.add("turn right");
                 break;
             case "q":
@@ -60,7 +75,6 @@ public class Simulator {
                     System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
                     System.out.println("orientation: " + bulldozer.getOrientation());
 
-                    commCount += 1;
                     commIssued.add("advance " + distance);
 
                     if (checked.length() != route.length()) {
@@ -78,16 +92,24 @@ public class Simulator {
         return false;
     }
 
+    /**
+     * Prints termination message and the summary of the simulation session.
+     *
+     * @param reason The reason of termination.
+     */
     private void terminate(String reason) {
         System.out.println();
         System.out.println("The simulation has ended " + reason + ". These are the commands you issued:\n");
-        System.out.println(commSummary() + "\n");
+        commSummary();
         System.out.println("The costs for this land clearing operation were:\n");
         costSummary();
         System.out.println("Thank you for using the Aconex site clearing simulator.");
     }
 
-    private String commSummary() {
+    /**
+     * Print the list of commands that have been issued by the user.
+     */
+    private void commSummary() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < commIssued.size(); i++) {
             if (i != commIssued.size() - 1) {
@@ -96,9 +118,13 @@ public class Simulator {
                 stringBuilder.append(commIssued.get(i));
             }
         }
-        return stringBuilder.toString();
+        System.out.println(stringBuilder.toString() + "\n");
     }
 
+    /**
+     * Print the operation cost report, consisting of a list of items, quantity and cost of each item, and
+     * the total cost of the operation.
+     */
     private void costSummary() {
         int commUnitCost = 1;
         int fuelUnitCost = 1;
@@ -119,6 +145,7 @@ public class Simulator {
         String item4 = "destruction of protected tree";
         String item5 = "paint damage to bulldozer";
         String total = "Total";
+        int commCount = commIssued.get(commIssued.size() - 1).equals("quit") ? commIssued.size() - 1 : commIssued.size();
         int commCost = commCount * commUnitCost;
         int fuel = bulldozer.getFuelUsage();
         int fuelCost = bulldozer.getFuelUsage() * fuelUnitCost;
@@ -163,10 +190,23 @@ public class Simulator {
         System.out.println(total + emptySpace(gap1 + gap2 - total.length() - countDigit(sum)) + sum + "\n");
     }
 
+    /**
+     * Generate empty spaces.
+     *
+     * @param length The amount of empty spaces desired.
+     * @return A String of empty spaces.
+     */
     private String emptySpace(int length) {
         return new String(new char[length]).replace("\0", " ");
     }
 
+    /**
+     * Count the number of digits for a number.
+     *
+     * @param num The number of interest.
+     * @return The number of digits that the provided number has. For example, for 0 the returned number is
+     * 1 and for 153 the returned number is 3.
+     */
     private int countDigit(int num) {
         if (num < 100) {
             return num < 10 ? 1 : 2;

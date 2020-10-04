@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -8,21 +9,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SiteTest {
     static final String MAP = "testFiles\\testSite.txt";
+    Site site;
+    Bulldozer bulldozer;
+
+    @BeforeEach
+    public void init() {
+        site = new Site(MAP);
+        bulldozer = new Bulldozer();
+    }
 
     @Test
     void outOfBound() {
-        Site site = new Site(MAP);
-        Bulldozer bulldozer = new Bulldozer();
-
         // 0: within bounds, 1: out of bounds, 2: on the boundary facing away from the site
         assertEquals(3, site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), 0));
 
-        int[][] expected = new int[][]{{0, 2, 2, 2}, {1, 1, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {2, 1, 1, 2}, {0, 0, 0, 0}};
+        int[][] expected = new int[6][4];
         ArrayList<String> route = new ArrayList<>();
+        expected[0] = new int[]{0, 2, 2, 2};
         route.add("t"); // move to [0,0]
+        expected[1] = new int[]{1, 1, 2, 2};
         route.add("otooooooo"); // move to northeast edge
+        expected[2] = new int[]{2, 1, 1, 2};
         route.add("oooo"); // move to southeast edge
+        expected[3] = new int[]{2, 1, 1, 2};
         route.add("oootrrrrr"); // move to southwest edge
+        expected[4] = new int[]{2, 1, 1, 2};
         route.add("rrot"); // move to northwest edge [0,0]
 
         for (int i = 0; i < 5; i++) {
@@ -44,6 +55,7 @@ class SiteTest {
         bulldozer.advance("t");
         bulldozer.turn('R');
         bulldozer.advance("o");
+        expected[5] = new int[]{0, 0, 0, 0};
 
         for (int j = 0; j < 4; j++) {
             int outOfBound = site.outOfBounds(bulldozer.getPosition(), bulldozer.getOrientation(), 1);
@@ -56,7 +68,6 @@ class SiteTest {
     // Jonathan Cook https://www.baeldung.com/java-testing-system-out-println
     @Test
     void display() {
-        Site site = new Site(MAP);
         String map = "totooooooo\n" +
                 "oooooooToo\n" +
                 "rrrooooToo\n" +
@@ -74,8 +85,6 @@ class SiteTest {
 
     @Test
     void checkForProtectedTree() {
-        Site site = new Site(MAP);
-        Bulldozer bulldozer = new Bulldozer();
         bulldozer.advance(site.getRoute(bulldozer.getPosition(), bulldozer.getOrientation(), 2));
         bulldozer.turn('R');
         bulldozer.advance(site.getRoute(bulldozer.getPosition(), bulldozer.getOrientation(), 2));
@@ -87,18 +96,14 @@ class SiteTest {
 
     @Test
     void getRoute() {
-        Site site = new Site(MAP);
-        Bulldozer bulldozer = new Bulldozer();
         String route = site.getRoute(bulldozer.getPosition(), bulldozer.getOrientation(), 6);
         assertEquals("totooo", route);
     }
 
     @Test
     void countUncleared() {
-        Site site = new Site(MAP);
         assertEquals(48, site.countUncleared());
 
-        Bulldozer bulldozer = new Bulldozer();
         int[] position = bulldozer.getPosition();
         char orientation = bulldozer.getOrientation();
         String clearedSquares =
@@ -109,9 +114,6 @@ class SiteTest {
 
     @Test
     void setRowCol() {
-        Site site = new Site(MAP);
-        Bulldozer bulldozer = new Bulldozer();
-
         int loop = 4;
         int length = 10;
         int width = 5;
@@ -158,6 +160,5 @@ class SiteTest {
             assertEquals(expected.get(i), site.getRoute(start[i], orientationActual[i], squares[i]));
             bulldozer.turn('R');
         }
-
     }
 }

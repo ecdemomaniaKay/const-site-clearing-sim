@@ -17,7 +17,7 @@ class BulldozerTest {
     }
 
     @Test
-    void advance() {
+    void advanceGetDamageGetFuelUsage() {
         Bulldozer bulldozer = new Bulldozer();
         String route = "toorrot";
         String clearedRoute = bulldozer.advance(route);
