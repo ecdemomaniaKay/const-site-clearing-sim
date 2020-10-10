@@ -1,41 +1,58 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BulldozerTest {
 
-    @Test
-    void getDirIndex() {
-        Bulldozer bulldozer = new Bulldozer();
-        assertEquals('E', bulldozer.getOrientation());
+    Bulldozer bulldozer;
+    String route;
+
+    @BeforeEach
+    public void init() {
+        bulldozer = new Bulldozer();
+        route = "toorrot";
     }
 
     @Test
-    void getPosition() {
-        Bulldozer bulldozer = new Bulldozer();
+    void updateBulldozerPosition_whenInvokeAdvance() {
         assertArrayEquals(new int[]{-1, 0}, bulldozer.getPosition());
-    }
-
-    @Test
-    void advanceGetDamageGetFuelUsage() {
-        Bulldozer bulldozer = new Bulldozer();
-        String route = "toorrot";
-        String clearedRoute = bulldozer.advance(route);
-        assertEquals("ccccccc", clearedRoute);
-        assertEquals(1, bulldozer.getDamage());
-        assertEquals(11, bulldozer.getFuelUsage());
+        bulldozer.advance(route);
         assertArrayEquals(new int[]{6, 0}, bulldozer.getPosition());
     }
 
     @Test
-    void turn() {
-        Bulldozer bulldozer = new Bulldozer();
+    void updateBulldozerDamage_whenInvokeAdvance() {
+        assertEquals(0, bulldozer.getDamage());
+        bulldozer.advance(route);
+        assertEquals(1, bulldozer.getDamage());
+    }
+
+    @Test
+    void increaseBulldozerFuelUsage_whenInvokeAdvance() {
+        assertEquals(0, bulldozer.getFuelUsage());
+        bulldozer.advance(route);
+        assertEquals(11, bulldozer.getFuelUsage());
+    }
+
+    @Test
+    void returnClearedRoute_whenInvokeAdvance() {
+        String clearedRoute = bulldozer.advance(route);
+        assertEquals("ccccccc", clearedRoute);
+    }
+
+
+    @Test
+    void updateOrientation_whenInvokeTurn() {
+        assertEquals('E', bulldozer.getOrientation());
+
         final char[] CLOCKWISE = bulldozer.CLOCKWISE;
 
+        // turing right/clockwise
         for (int i = 1; i <= CLOCKWISE.length; i++) {
             bulldozer.turn('R');
             assertEquals(CLOCKWISE[i % CLOCKWISE.length], bulldozer.getOrientation());
         }
+        // turning left/counter-clockwise
         for (int i = CLOCKWISE.length - 1; i >= 0; i--) {
             bulldozer.turn('L');
             assertEquals(CLOCKWISE[i % CLOCKWISE.length], bulldozer.getOrientation());

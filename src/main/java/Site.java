@@ -78,6 +78,8 @@ public class Site {
 
     /**
      * Get the sequence of squares, which represents the terrain that the the bulldozer will advance through.
+     * If the parameters given will result in the bulldozer going offsite, the sequence of squares that
+     * it will pass through before crossing the site boundary will be returned.
      *
      * @param position    The bulldozer's current position.
      * @param orientation The direction the bulldozer is currently facing.
@@ -89,10 +91,8 @@ public class Site {
         // check whether the intended advance distance will exceed the site boundary
         int outOfBounds = outOfBounds(position, orientation, distance);
 
-        if (outOfBounds == 3) {
+        if (outOfBounds == 3 || outOfBounds == 2) {
             return "";
-        } else if (outOfBounds == 2) {
-            return "OutOfBoundsError";
         }
 
         switch (orientation) {
@@ -145,6 +145,7 @@ public class Site {
         for (String siteRow : siteRows) {
             System.out.println(siteRow.replaceAll(".(?!$)", "$0 "));
         }
+        System.out.println();
     }
 
     /**
@@ -156,7 +157,7 @@ public class Site {
      * @return The sequence of squares for the advance plan.
      */
     private String getColumn(int[] position, int distance, int sign) {
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 1; i < distance + 1; i++) {
             stringBuilder.append(siteRows[position[1] + i * sign].charAt(position[0]));
         }

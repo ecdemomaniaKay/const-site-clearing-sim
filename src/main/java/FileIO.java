@@ -12,18 +12,18 @@ public class FileIO {
      * @return The contents of the file.
      */
     public String readFile(String dir) {
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         try {
             try (FileReader inputFile = new FileReader(dir)) {
-                Scanner parser = new Scanner(inputFile);
+                final Scanner parser = new Scanner(inputFile);
                 while (parser.hasNextLine()) {
                     stringBuilder.append(parser.nextLine()).append("\n");
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println(dir + " not found");
+            System.out.println("Error: " + dir + " not found");
         } catch (IOException e) {
-            System.out.println("Unexpected I/O error");
+            System.out.println("Error: Unexpected I/O error");
         }
 
         return stringBuilder.toString();

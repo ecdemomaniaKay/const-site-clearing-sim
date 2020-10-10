@@ -8,27 +8,24 @@ public class Bulldozer {
      */
     public static final char[] CLOCKWISE = new char[]{'E', 'S', 'W', 'N'};
 
-    // index of the element in CLOCKWISE that represents the direction the bulldozer is facing
-    private int dirIndex;
-
     // the coordinate of the bulldozer's position
-    final private int[] position;
-
-    // fuel consumption
-    private int fuelUsage;
+    private final int[] position;
 
     // amount of damage suffered
     private int damage;
 
+    // index of the element in CLOCKWISE that represents the direction the bulldozer is facing
+    private int dirIndex;
+
+    // fuel consumption
+    private int fuelUsage;
+
+
     Bulldozer() {
-        // initially facing East
-        dirIndex = 0;
-
-        // initial position at Northern edge of the site, immediately to the West of the site
-        position = new int[]{-1, 0};
-
-        fuelUsage = 0;
+        position = new int[]{-1, 0}; // initial position at Northern edge of the site, immediately to the West of the site
         damage = 0;
+        dirIndex = 0; // initially facing East
+        fuelUsage = 0;
     }
 
     /**
@@ -43,7 +40,7 @@ public class Bulldozer {
             return route;
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < route.length(); i++) {
             switch (route.charAt(i)) {
                 case 'c':
@@ -63,7 +60,7 @@ public class Bulldozer {
             stringBuilder.append("c");
         }
 
-        int distance = route.length();
+        final int distance = route.length();
         switch (CLOCKWISE[dirIndex]) {
             case 'E':
                 position[0] += distance;
