@@ -39,7 +39,7 @@ public class Simulator {
     /**
      * Prompts user to issue a command.
      *
-     * @return Whether the program should terminate.
+     * @return The user input.
      */
     public String addCommand() {
         System.out.print("(l)eft, (r)ight, (a)dvance <n>, (q)uit: ");
@@ -49,6 +49,7 @@ public class Simulator {
     /**
      * Prompts user to issue a command.
      *
+     * @param command The command to execute.
      * @return Whether the program should terminate.
      */
     public boolean action(String command) {
