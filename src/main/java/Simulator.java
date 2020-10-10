@@ -45,7 +45,7 @@ public class Simulator {
     /**
      * Prompts user to issue a command.
      *
-     * @return The user input.
+     * @return The processed user input.
      */
     public String addCommand() {
         System.out.print("(l)eft, (r)ight, (a)dvance <n>, (q)uit: ");
@@ -60,23 +60,26 @@ public class Simulator {
      */
     public String action(String command) {
         switch (command) {
+            case "left":
             case "l":
                 bulldozer.turn('L');
                 commIssued.add("turn left");
                 return "";
+            case "right":
             case "r":
                 bulldozer.turn('R');
                 commIssued.add("turn right");
                 return "";
+            case "quit":
             case "q":
                 commIssued.add("quit");
                 return "at your request";
             default:
-                if (command.matches("a\\s+[1-9]\\d*")) {
+                if (command.matches("a\\s+[1-9]\\d*") || command.matches("advance\\s+[1-9]\\d*")) {
                     final int distance = Integer.parseInt(command.split("\\s+")[1]);
                     return advance(distance);
-                } else if (command.matches("a\\s+0\\d*")) {
-                    System.out.println("Please remove leading zero.");
+                } else if (command.matches("a\\s+0\\d*") || command.matches("advance\\s+0\\d*")) {
+                    System.out.println("Please remove leading zero(s).");
                 } else {
                     System.out.println(command + " is an invalid command. Please try again.");
                 }
