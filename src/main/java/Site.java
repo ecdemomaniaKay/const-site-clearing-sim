@@ -149,11 +149,11 @@ public class Site {
     }
 
     /**
-     * Get the route for north-bound or south-bound advance plans.
+     * Get the route for North-bound or South-bound advance plans.
      *
      * @param position The bulldozer's current position.
      * @param distance The distance the bulldozer wishes to advance.
-     * @param sign     The direction the bulldozer wishes to advance. 1 for south and -1 for north.
+     * @param sign     The direction the bulldozer wishes to advance. 1 for South and -1 for North.
      * @return The sequence of squares for the advance plan.
      */
     private String getColumn(int[] position, int distance, int sign) {
