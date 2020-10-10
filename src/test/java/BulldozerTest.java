@@ -45,7 +45,7 @@ class BulldozerTest {
     void givenBulldozerTurned_updateOrientation_whenInvokeTurn() {
         assertEquals('E', bulldozer.getOrientation());
 
-        final char[] CLOCKWISE = bulldozer.CLOCKWISE;
+        final char[] CLOCKWISE = bulldozer.getClockwise();
 
         // turing right/clockwise
         for (int i = 1; i <= CLOCKWISE.length; i++) {

@@ -3,10 +3,8 @@
  */
 
 public class Bulldozer {
-    /**
-     * All possible directions the bulldozer can face in clockwise order.
-     */
-    public static final char[] CLOCKWISE = new char[]{'E', 'S', 'W', 'N'};
+    // All possible directions the bulldozer can face in clockwise order.
+    private final char[] clockwise = new char[]{'E', 'S', 'W', 'N'};
 
     // the coordinate of the bulldozer's position
     private final int[] position;
@@ -61,7 +59,7 @@ public class Bulldozer {
         }
 
         final int distance = route.length();
-        switch (CLOCKWISE[dirIndex]) {
+        switch (clockwise[dirIndex]) {
             case 'E':
                 position[0] += distance;
                 break;
@@ -88,19 +86,23 @@ public class Bulldozer {
         switch (orientation) {
             case 'L':
                 if (dirIndex == 0) {
-                    dirIndex = CLOCKWISE.length - 1;
+                    dirIndex = clockwise.length - 1;
                 } else {
                     dirIndex -= 1;
                 }
                 break;
             case 'R':
-                if (dirIndex == CLOCKWISE.length - 1) {
+                if (dirIndex == clockwise.length - 1) {
                     dirIndex = 0;
                 } else {
                     dirIndex += 1;
                 }
                 break;
         }
+    }
+
+    public char[] getClockwise() {
+        return clockwise.clone();
     }
 
     /**
@@ -118,7 +120,7 @@ public class Bulldozer {
      * @return The index of the element in <code>CLOCKWISE</code> that represents the direction the bulldozer is facing.
      */
     public char getOrientation() {
-        return CLOCKWISE[dirIndex];
+        return clockwise[dirIndex];
     }
 
     /**
@@ -136,6 +138,6 @@ public class Bulldozer {
      * @return The position of the bulldozer.
      */
     public int[] getPosition() {
-        return new int[]{position[0], position[1]};
+        return position.clone();
     }
 }

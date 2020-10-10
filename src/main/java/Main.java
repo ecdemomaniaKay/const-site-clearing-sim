@@ -6,7 +6,7 @@ public class Main {
         boolean newSession = true;
 
         while (newSession) {
-            Simulator sim = null;
+            Simulator sim;
             try {
                 sim = new Simulator(args[0]);
             } catch (DataFormatException e) {

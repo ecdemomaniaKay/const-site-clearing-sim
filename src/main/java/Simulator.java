@@ -7,6 +7,9 @@ import java.util.zip.DataFormatException;
  * to clear a site in preparation for building.
  */
 public class Simulator {
+    // The site object which handles information regarding the site
+    private final Site site;
+
     // The bulldozer object which can clear the land
     private final Bulldozer bulldozer;
 
@@ -17,9 +20,6 @@ public class Simulator {
     private final int col1Width = 34;
     private final int col2Width = 8;
     private final int col3Width = 8;
-
-    // The site object which handles information regarding the site
-    private Site site;
 
     // The whether the protected tree has been destroyed. 0 for not destroyed, 1 for destroyed.
     private int protectedTreeDestroyed;
