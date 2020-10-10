@@ -1,11 +1,19 @@
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 
 public class Main {
     public static void main(String... args) {
         boolean newSession = true;
 
         while (newSession) {
-            final Simulator sim = new Simulator(args[0]);
+            Simulator sim = null;
+            try {
+                sim = new Simulator(args[0]);
+            } catch (DataFormatException e) {
+                System.out.println("\nInvalid site map with unequal row lengths. The simulator will end now.\n");
+                e.printStackTrace();
+                return;
+            }
             sim.welcome();
             boolean exit = false;
             while (!exit) {

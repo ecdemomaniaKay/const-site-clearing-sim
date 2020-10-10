@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.zip.DataFormatException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
 
@@ -12,7 +14,11 @@ class SiteTest {
 
     @BeforeEach
     public void init() {
-        site = new Site(MAP);
+        try {
+            site = new Site(MAP);
+        } catch (DataFormatException e) {
+            e.printStackTrace();
+        }
         bulldozer = new Bulldozer();
     }
 

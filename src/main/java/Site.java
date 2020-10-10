@@ -1,3 +1,5 @@
+import java.util.zip.DataFormatException;
+
 /**
  * Class for handling the site information including terrain, length and width.
  */
@@ -8,8 +10,11 @@ public class Site {
     // the northwest corner of the site.
     private final String[] siteRows;
 
-    Site(String map) {
+    Site(String map) throws DataFormatException {
         siteRows = new FileIO().readFile(map).split("\n");
+        if (!siteRowsAreEqualInLength()) {
+            throw new DataFormatException("DataFormatException: Invalid site map with unequal row lengths.");
+        }
     }
 
     /**
@@ -146,6 +151,16 @@ public class Site {
             System.out.println(siteRow.replaceAll(".(?!$)", "$0 "));
         }
         System.out.println();
+    }
+
+    private boolean siteRowsAreEqualInLength() {
+        final int length = siteRows[0].length();
+        for (int i = 1; i < siteRows.length; i++) {
+            if (siteRows[i].length() != length) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
