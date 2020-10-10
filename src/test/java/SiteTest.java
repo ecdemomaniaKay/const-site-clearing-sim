@@ -60,13 +60,19 @@ class SiteTest {
     }
 
     @Test
-    void returnTheSquaresThatAreInsideSiteBoundaries_whenInvokeGetRoute() {
+    void givenBulldozerAtInitialState_notBeBlockedFromEnteringSiteByDrivingEast_whenInvokeGetRoute() {
+        String route = site.getRoute(new int[]{-1, 0}, 'E', 1);
+        assertNotEquals("T", route);
+    }
+
+    @Test
+    void givenAdvancePlan_returnTheSquaresThatAreInsideSiteBoundaries_whenInvokeGetRoute() {
         String route = site.getRoute(new int[]{-1, 0}, 'E', 6);
         assertEquals("totooo", route);
     }
 
     @Test
-    void countAmountOfUnclearedSquares_whenInvokeCountUncleared() {
+    void givenInitializedSite_countAmountOfUnclearedSquares_whenInvokeCountUncleared() {
         assertEquals(48, site.countUncleared());
         site.setRowCol(new int[]{-1, 0}, 'E', "c");
         assertEquals(47, site.countUncleared());
@@ -75,7 +81,7 @@ class SiteTest {
     // Reference:
     // Jonathan Cook https://www.baeldung.com/java-testing-system-out-println
     @Test
-    void printSiteTerrainMapInConsole_whenInvokeDisplay() throws Exception {
+    void givenInitializedSite_printSiteTerrainMapInConsole_whenInvokeDisplay() throws Exception {
         String map = "t o t o o o o o o o\n" +
                 "o o o o o o o T o o\n" +
                 "r r r o o o o T o o\n" +
@@ -87,7 +93,7 @@ class SiteTest {
     }
 
     @Test
-    void updateSiteMap_whenInvokeSetRowCol() throws Exception {
+    void givenClearedRoute_updateSiteMap_whenInvokeSetRowCol() throws Exception {
         int[][] position = new int[][]{new int[]{-1, 0}, {4, 0}, {4, 3}, {1, 3}};
         char[] orientation = new char[]{'E', 'S', 'W', 'N'};
         String[] clearedSquares = new String[]{"ccccc", "ccc", "ccc", "ccc"};

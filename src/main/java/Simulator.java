@@ -27,7 +27,7 @@ public class Simulator {
     }
 
     /**
-     * Prints welcome message.
+     * Prints welcome message and print site map.
      */
     public void welcome() {
         System.out.println("\nWelcome to the Aconex site clearing simulator. This is a map of the site:\n");
@@ -41,10 +41,17 @@ public class Simulator {
      *
      * @return Whether the program should terminate.
      */
-    public boolean addCommand() {
+    public String addCommand() {
         System.out.print("(l)eft, (r)ight, (a)dvance <n>, (q)uit: ");
-        final String command = new Scanner(System.in).nextLine().toLowerCase().trim();
+        return new Scanner(System.in).nextLine().toLowerCase().trim();
+    }
 
+    /**
+     * Prompts user to issue a command.
+     *
+     * @return Whether the program should terminate.
+     */
+    public boolean action(String command) {
         switch (command) {
             case "l":
                 bulldozer.turn('L');
@@ -70,9 +77,9 @@ public class Simulator {
                     site.setRowCol(position, orientation, cleared);
 
                     // debug
-                    site.display();
-                    System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
-                    System.out.println("orientation: " + bulldozer.getOrientation());
+//                    site.display();
+//                    System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
+//                    System.out.println("orientation: " + bulldozer.getOrientation());
 
                     commIssued.add("advance " + distance);
 
@@ -84,6 +91,8 @@ public class Simulator {
                         terminate("because you attempted to navigated beyond the boundary of the site");
                         return true;
                     }
+                } else if (command.matches("a\\s+0\\d*")) {
+                    System.out.println("Please remove leading zero.");
                 } else {
                     System.out.println(command + " is an invalid command. Please try again.");
                 }

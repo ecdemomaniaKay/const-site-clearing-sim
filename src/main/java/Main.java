@@ -9,7 +9,7 @@ public class Main {
             sim.welcome();
             boolean exit = false;
             while (!exit) {
-                exit = sim.addCommand();
+                exit = sim.action(sim.addCommand());
             }
 
             newSession = newSession();

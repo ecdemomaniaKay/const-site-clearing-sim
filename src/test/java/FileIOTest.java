@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileIOTest {
 
     @Test
-    void convertContentIntoString_WhenInvokeReadFile() {
+    void givenSiteMapTextFile_convertContentIntoString_WhenInvokeReadFile() {
         FileIO fileIO = new FileIO();
         String dir = "testFiles\\testSite.txt";
         String imported = fileIO.readFile(dir);
