@@ -9,7 +9,9 @@ public class Main {
             sim.welcome();
             boolean exit = false;
             while (!exit) {
-                exit = sim.action(sim.addCommand());
+                String command = sim.addCommand();
+                String reason = sim.action(command);
+                exit = sim.terminate(reason);
             }
 
             newSession = newSession();

@@ -15,6 +15,11 @@ public class Simulator {
     // A list of all commands issued
     private final ArrayList<String> commIssued;
 
+    // column width of the cost summary table
+    private final int col1Width = 34;
+    private final int col2Width = 8;
+    private final int col3Width = 8;
+
     // The whether the protected tree has been destroyed. 0 for not destroyed, 1 for destroyed.
     private int protectedTreeDestroyed;
 
@@ -50,73 +55,86 @@ public class Simulator {
      * Prompts user to issue a command.
      *
      * @param command The command to execute.
-     * @return Whether the program should terminate.
+     * @return The reason of termination. Empty String means no reason to terminate program.
      */
-    public boolean action(String command) {
+    public String action(String command) {
         switch (command) {
             case "l":
                 bulldozer.turn('L');
                 commIssued.add("turn left");
-                break;
+                return "";
             case "r":
                 bulldozer.turn('R');
                 commIssued.add("turn right");
-                break;
+                return "";
             case "q":
                 commIssued.add("quit");
-                terminate("at your request");
-                return true;
+                return "at your request";
             default:
                 if (command.matches("a\\s+[1-9]\\d*")) {
                     final int distance = Integer.parseInt(command.split("\\s+")[1]);
-                    final int[] position = bulldozer.getPosition();
-                    final char orientation = bulldozer.getOrientation();
-
-                    final String route = site.getRoute(position, orientation, distance);
-                    final String checked = site.checkForProtectedTree(route);
-                    final String cleared = bulldozer.advance(checked);
-                    site.setRowCol(position, orientation, cleared);
-
-                    // debug
-//                    site.display();
-//                    System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
-//                    System.out.println("orientation: " + bulldozer.getOrientation());
-
-                    commIssued.add("advance " + distance);
-
-                    if (checked.length() != route.length()) {
-                        protectedTreeDestroyed = 1;
-                        terminate("because you attempted to removed a protected tree");
-                        return true;
-                    } else if (route.length() != distance) {
-                        terminate("because you attempted to navigated beyond the boundary of the site");
-                        return true;
-                    }
+                    return advance(distance);
                 } else if (command.matches("a\\s+0\\d*")) {
                     System.out.println("Please remove leading zero.");
                 } else {
                     System.out.println(command + " is an invalid command. Please try again.");
                 }
         }
-        return false;
+        return "";
     }
 
     /**
-     * Prints termination message and the summary of the simulation session.
+     * Prints termination message and the summary of the session.
      *
-     * @param reason The reason of termination.
+     * @param reason The reason of termination. Empty String means no reason to terminate program.
+     * @return Whether the program should terminate.
      */
-    private void terminate(String reason) {
-        System.out.println();
-        System.out.println("The simulation has ended " + reason + ". These are the commands you issued:\n");
-        commSummary();
-        System.out.println("The costs for this land clearing operation were:\n");
-        costSummary();
-        System.out.println("Thank you for using the Aconex site clearing simulator.\n");
+    public boolean terminate(String reason) {
+        if (reason.isEmpty()) {
+            return false;
+        } else {
+            System.out.println("\nThe simulation has ended " + reason + ". These are the commands you issued:\n");
+            commSummary();
+            costSummary();
+            System.out.println("Thank you for using the Aconex site clearing simulator.\n");
+            return true;
+        }
     }
 
     /**
-     * Print the list of commands that have been issued by the user.
+     * Have the bulldozer advance forward a given distance.
+     *
+     * @param distance The distance to advance.
+     * @return The reason of termination. Empty String means no reason to terminate program.
+     */
+    private String advance(int distance) {
+        final int[] position = bulldozer.getPosition();
+        final char orientation = bulldozer.getOrientation();
+
+        final String route = site.getRoute(position, orientation, distance);
+        final String checked = site.checkForProtectedTree(route);
+        final String cleared = bulldozer.advance(checked);
+        site.setRowCol(position, orientation, cleared);
+
+        commIssued.add("advance " + distance);
+
+        // For debugging purposes
+//        site.display();
+//        System.out.println("pos: [" + bulldozer.getPosition()[0] + ", " + bulldozer.getPosition()[1] + "]");
+//        System.out.println("orientation: " + bulldozer.getOrientation());
+
+        if (checked.length() != route.length()) {
+            protectedTreeDestroyed = 1;
+            return "because you attempted to removed a protected tree";
+        } else if (route.length() != distance) {
+            return "because you attempted to navigated beyond the boundary of the site";
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Print the list of valid commands that have been issued by the user.
      */
     private void commSummary() {
         final StringBuilder stringBuilder = new StringBuilder();
@@ -132,7 +150,7 @@ public class Simulator {
 
     /**
      * Print the operation cost report, consisting of a list of items, quantity and cost of each item, and
-     * the total cost of the operation.
+     * the total cost of the operation. Invalid commands are not counted towards communication overhead.
      */
     private void costSummary() {
         final int commUnitCost = 1;
@@ -140,10 +158,6 @@ public class Simulator {
         final int unclearedUnitCost = 3;
         final int protectedTreeUnitCost = 10;
         final int damageUnitCost = 2;
-
-        // width of the summary table
-        final int gap1 = 42;
-        final int gap2 = 8;
 
         final String label1 = "Item";
         final String label2 = "Quantity";
@@ -164,40 +178,31 @@ public class Simulator {
         final int treeCost = protectedTreeDestroyed * protectedTreeUnitCost;
         final int damage = bulldozer.getDamage();
         final int damageCost = bulldozer.getDamage() * damageUnitCost;
-        final int sum = commCost + fuelCost + unclearedCost + treeCost + damageCost;
+        final int totalCost = commCost + fuelCost + unclearedCost + treeCost + damageCost;
 
+        System.out.println("The costs for this land clearing operation were:\n");
         System.out.println(
-                label1 + emptySpace(gap1 - label1.length() - label2.length()) +
-                        label2 + emptySpace(gap2 - label3.length()) +
+                label1 + emptySpace(col1Width + col2Width - label1.length() - label2.length()) +
+                        label2 + emptySpace(col3Width - label3.length()) +
                         label3);
-        System.out.println(
-                item1 + emptySpace(gap1 - item1.length() - countDigit(commCount)) +
-                        commCount + emptySpace(gap2 - countDigit(commCost)) +
-                        commCost
-        );
-        System.out.println(
-                item2 + emptySpace(gap1 - item2.length() - countDigit(fuel)) +
-                        fuel + emptySpace(gap2 - countDigit(fuelCost)) +
-                        fuelCost
-        );
-        System.out.println(
-                item3 + emptySpace(gap1 - item3.length() - countDigit(uncleared)) +
-                        uncleared + emptySpace(gap2 - countDigit(unclearedCost)) +
-                        unclearedCost
-
-        );
-        System.out.println(
-                item4 + emptySpace(gap1 - item4.length() - countDigit(protectedTreeDestroyed)) +
-                        protectedTreeDestroyed + emptySpace(gap2 - countDigit(treeCost)) +
-                        treeCost
-        );
-        System.out.println(
-                item5 + emptySpace(gap1 - item5.length() - countDigit(damage)) +
-                        damage + emptySpace(gap2 - countDigit(damageCost)) +
-                        damageCost
-        );
+        costSummaryRow(item1, commCount, commCost);
+        costSummaryRow(item2, fuel, fuelCost);
+        costSummaryRow(item3, uncleared, unclearedCost);
+        costSummaryRow(item4, protectedTreeDestroyed, treeCost);
+        costSummaryRow(item5, damage, damageCost);
         System.out.println("----");
-        System.out.println(total + emptySpace(gap1 + gap2 - total.length() - countDigit(sum)) + sum + "\n");
+        System.out.println(total + emptySpace(col1Width + col2Width + col3Width - total.length() - countDigit(totalCost)) + totalCost + "\n");
+    }
+
+    /**
+     * Print one row of cost summary table.
+     */
+    private void costSummaryRow(String item, int quantity, int unitCost) {
+        System.out.println(
+                item + emptySpace(col1Width + col2Width - item.length() - countDigit(quantity)) +
+                        quantity + emptySpace(col3Width - countDigit(unitCost)) +
+                        unitCost
+        );
     }
 
     /**
