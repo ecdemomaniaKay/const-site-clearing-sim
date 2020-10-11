@@ -1,5 +1,5 @@
 # const-site-clearing-sim
-To run the program, download the contents of the directory `construction-site-clearing-sim\out\artifacts\construction_site_clearing_sim_jar`.
+To run the program, download the contents of the directory `out\artifacts\construction_site_clearing_sim_jar`.
 
 ### Load a new map
 1. Name the file of the site map `sitemap.txt`
