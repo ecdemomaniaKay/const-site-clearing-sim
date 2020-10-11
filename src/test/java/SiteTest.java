@@ -66,12 +66,6 @@ class SiteTest {
     }
 
     @Test
-    void givenBulldozerAtInitialState_notBeBlockedFromEnteringSiteByDrivingEast_whenInvokeGetRoute() {
-        String route = site.getRoute(new int[]{-1, 0}, 'E', 1);
-        assertNotEquals("T", route);
-    }
-
-    @Test
     void givenAdvancePlan_returnTheSquaresThatAreInsideSiteBoundaries_whenInvokeGetRoute() {
         String route = site.getRoute(new int[]{-1, 0}, 'E', 6);
         assertEquals("totooo", route);

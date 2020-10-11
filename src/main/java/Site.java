@@ -12,9 +12,7 @@ public class Site {
 
     Site(String map) throws DataFormatException {
         siteRows = new FileIO().readFile(map).split("\n");
-        if (!siteRowsAreEqualInLength()) {
-            throw new DataFormatException("DataFormatException: Invalid site map with unequal row lengths.");
-        }
+        mapValidation();
     }
 
     /**
@@ -231,6 +229,20 @@ public class Site {
                                     .toString();
                 }
                 break;
+        }
+    }
+
+    /**
+     * Checks whether the site map provided is valid.
+     *
+     * @throws DataFormatException If map contains unequal row lengths or the Northwestern entrance is blocked by a
+     *                             protected tree.
+     */
+    private void mapValidation() throws DataFormatException {
+        if (!siteRowsAreEqualInLength()) {
+            throw new DataFormatException("DataFormatException: Invalid site. Contains unequal row lengths.");
+        } else if (siteRows[0].charAt(0) == 'T') {
+            throw new DataFormatException("DataFormatException: Invalid site. Northwestern entrance to site is blocked by a protected tree.");
         }
     }
 }
