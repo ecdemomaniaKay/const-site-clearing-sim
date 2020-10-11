@@ -21,9 +21,9 @@ public class FileIO {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Error: " + dir + " not found");
+            System.out.println("Error reading file. File " + dir + " not found.");
         } catch (IOException e) {
-            System.out.println("Error: Unexpected I/O error");
+            System.out.println("Unexpected I/O error");
         }
 
         return stringBuilder.toString();

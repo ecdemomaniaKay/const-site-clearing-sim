@@ -1,7 +1,13 @@
 import java.util.Scanner;
 import java.util.zip.DataFormatException;
 
+/**
+ * Class that runs the simulator.
+ */
 public class Main {
+    /**
+     * Main method.
+     */
     public static void main(String... args) {
         boolean newSession = true;
 
@@ -10,8 +16,14 @@ public class Main {
             try {
                 sim = new Simulator(args[0]);
             } catch (DataFormatException e) {
-                System.out.println("\nInvalid site map with unequal row lengths. The simulator will end now.\n");
-                e.printStackTrace();
+                System.out.println("\nInvalid site map. The rows from the provided site map have unequal lengths. The simulator will end now.\n");
+                enterToExit();
+//                e.printStackTrace();
+                return;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("\nMissing argument. Please include the directory of the site map as the first argument.\n");
+//                e.printStackTrace();
+                enterToExit();
                 return;
             }
             sim.welcome();
@@ -26,6 +38,11 @@ public class Main {
         }
     }
 
+    /**
+     * Asks user whether they want to run another session.
+     *
+     * @return Whether user wants to start a new session.
+     */
     private static boolean newSession() {
         while (true) {
             System.out.print("Would you like to start a new session? (Y/N) ");
@@ -40,5 +57,13 @@ public class Main {
                 System.out.println("Invalid response. Please try again.");
             }
         }
+    }
+
+    /**
+     * Adds a pause before the program terminates.
+     */
+    private static void enterToExit() {
+        System.out.println("\nPress enter to exit...\n");
+        new Scanner(System.in).nextLine();
     }
 }
