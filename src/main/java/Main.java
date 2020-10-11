@@ -49,12 +49,13 @@ public class Main {
             final String response = new Scanner(System.in).nextLine().toUpperCase().trim();
 
             if (response.equals("N")) {
-                System.out.println("Simulator terminated.\n");
+                System.out.println("\nSimulator terminated.");
+                enterToExit();
                 return false;
             } else if (response.equals("Y")) {
                 return true;
             } else {
-                System.out.println("Invalid response. Please try again.");
+                System.out.println("Invalid response. Enter Y to start new session or N to exit.");
             }
         }
     }
@@ -63,7 +64,7 @@ public class Main {
      * Adds a pause before the program terminates.
      */
     private static void enterToExit() {
-        System.out.println("\nPress enter to exit...\n");
+        System.out.println("\n\nPress enter to exit...\n");
         new Scanner(System.in).nextLine();
     }
 }

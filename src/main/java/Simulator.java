@@ -36,7 +36,7 @@ public class Simulator {
      * Prints welcome message and print site map.
      */
     public void welcome() {
-        System.out.println("\nWelcome to the Aconex site clearing simulator. This is a map of the site:\n");
+        System.out.println("\n\nWelcome to the Aconex site clearing simulator. This is a map of the site:\n");
         site.display();
         System.out.println("The bulldozer is currently located at the Northern edge of the" +
                 " site, immediately to the West of the site, and facing East.\n");

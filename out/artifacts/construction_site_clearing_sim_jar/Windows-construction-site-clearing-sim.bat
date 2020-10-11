@@ -1,0 +1,1 @@
+java -jar construction-site-clearing-sim.jar %cd%\sitemap.txt
