@@ -1,4 +1,6 @@
 # const-site-clearing-sim
+To run the program, download the contents of the directory `construction-site-clearing-sim\out\artifacts\construction_site_clearing_sim_jar`.
+
 ### Load a new map
 1. Name the text file of the site map `sitemap.txt`
 2. Copy paste the file to this directory `construction-site-clearing-sim\out\artifacts\construction_site_clearing_sim_jar`
@@ -8,7 +10,7 @@
 1. Navigate to `construction-site-clearing-sim\out\artifacts\construction_site_clearing_sim_jar`
 2. Double click `Windows-construction-site-clearing-sim.bat`
 
-### Running on a MacOS
+### Running on a MacOS machine
 1. Open your terminal and navigate to `construction-site-clearing-sim\out\artifacts\construction_site_clearing_sim_jar`
 2. Enter the following command.
     ````
